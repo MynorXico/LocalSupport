@@ -1,3 +1,38 @@
+# == Schema Information
+#
+# Table name: organisations
+#
+#  id                    :integer          not null, primary key
+#  address               :string(255)      default(""), not null
+#  deleted_at            :datetime
+#  description           :text             default(""), not null
+#  donation_info         :text             default(""), not null
+#  email                 :string(255)      default(""), not null
+#  gmaps                 :boolean
+#  imported_at           :datetime
+#  imported_from         :string
+#  latitude              :float
+#  longitude             :float
+#  name                  :string(255)      default(""), not null
+#  non_profit            :boolean
+#  postcode              :string(255)      default(""), not null
+#  publish_address       :boolean          default(FALSE)
+#  publish_email         :boolean          default(TRUE)
+#  publish_phone         :boolean          default(FALSE)
+#  slug                  :string
+#  telephone             :string(255)      default(""), not null
+#  type                  :string           default("Organisation")
+#  website               :string(255)      default(""), not null
+#  created_at            :datetime
+#  updated_at            :datetime
+#  charity_commission_id :integer
+#  imported_id           :integer
+#
+# Indexes
+#
+#  index_organisations_on_slug  (slug) UNIQUE
+#
+
 require 'csv'
 require 'string'
 
@@ -7,18 +42,24 @@ class Organisation < BaseOrganisation
   has_many :users
   has_many :edits, class_name: 'ProposedOrganisationEdit', dependent: :destroy
   has_many :events
+  has_many :services
 
   accepts_nested_attributes_for :users # TODO check if needed
 
   scope :order_by_most_recent, -> { order('organisations.updated_at DESC') }
-  scope :not_null_email, lambda {where("organisations.email <> ''")}
+  scope :not_null_email, -> {where("organisations.email <> ''")}
 
   # Should we not use :includes, which pulls in extra data? http://nlingutla.com/blog/2013/04/21/includes-vs-joins-in-rails/
   # Alternative => :joins('LEFT OUTER JOIN users ON users.organisation_id = organisations.id)
   # Difference between inner and outer joins: http://stackoverflow.com/a/38578/2197402
 
-  scope :null_users, lambda { includes(:users).where("users.organisation_id IS NULL").references(:users) }
-  scope :without_matching_user_emails, lambda {where("organisations.email NOT IN (#{User.select('email').to_sql})")}
+  scope :null_users, lambda {
+    includes(:users).where('users.organisation_id IS NULL').references(:users) 
+  }
+
+  scope :without_matching_user_emails, lambda {
+    where("organisations.email NOT IN (#{User.select('email').to_sql})")
+  }
 
   after_save :uninvite_users, if: ->{ saved_change_to_attribute?(:email) }
 
@@ -83,7 +124,7 @@ class Organisation < BaseOrganisation
   end
 
   def self.import_category_mappings(filename, limit)
-    import(filename, limit, false) do |row, validation|
+    import(filename, limit, false) do |row, _validation|
       import_categories_from_array(row)
     end
   end
@@ -108,10 +149,10 @@ class Organisation < BaseOrganisation
     end
   end
 
-  def self.import(filename, limit, validation, &block)
+  def self.import(filename, limit, validation)
     csv_text = File.open(filename, 'r:ISO-8859-1')
     count = 0
-    CSV.parse(csv_text, :headers => true).each do |row|
+    CSV.parse(csv_text, headers: true).each do |row|
       break if count >= limit
       count += 1
       begin
@@ -130,7 +171,7 @@ class Organisation < BaseOrganisation
     str
   end
 
-  def self.add_email(row, validation)
+  def self.add_email(row, _validation)
     orgs = where('UPPER(name) LIKE ? ',"%#{row[0].try(:upcase)}%")
     return "#{row[0]} was not found\n" unless orgs && orgs[0] && orgs[0].email.blank?
     setup_row(orgs[0], row)
@@ -154,7 +195,7 @@ class Organisation < BaseOrganisation
   private
 
   def embellish_invite_error_and_add_to_model(email, error_msg)
-    error_msg = ("Error: Email is invalid" == error_msg) ? "The user email you entered,'#{email}', is invalid" : error_msg
+    error_msg = ('Error: Email is invalid' == error_msg) ? "The user email you entered,'#{email}', is invalid" : error_msg
     self.errors.add(:superadministrator_email, error_msg)
   end
 

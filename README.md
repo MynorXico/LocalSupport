@@ -5,7 +5,19 @@ LocalSupport
 
 LocalSupport is the software that runs the [Harrow Community Network](https://www.harrowcn.org.uk/), which was originally conceived as a directory of local support services, e.g. a list charities and non-profits in a particular area.  It's since pivoted to focus on volunteer opportunities in a local area, but the list of organisations remains accessible. 
 
-[Project Overview on AgileVentures](http://www.agileventures.org/projects/localsupport/documents/project-overview-localsupport)
+Project Overview Video
+----------------------
+
+Please see the following video for an overview of the project background:
+
+<p align="center">
+  <a href="http://www.youtube.com/watch?v=TM37kPVpDZ0" title="LocalSupport Overview">
+    <img src="http://img.youtube.com/vi/TM37kPVpDZ0/0.jpg">
+  </a>
+</p>
+
+Installation
+------------
 
 Installation and other technical issues are being moved from the github wiki to the docs dir:
 
@@ -34,3 +46,8 @@ The logo is copyright Alex, all rights reserved.
 The authors and contributors have agreed to license all other software
 under the MIT license, an open source free software license. See the
 file named COPYING which includes a disclaimer of warranty.
+
+Contains Ordnance Survey, Office of National Statistics, National Records Scotland and LPS Intellectual Property data © Crown copyright and database right [2016]. Data licensed under the terms of the Open Government Licence (http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3). Ordnance Survey data covered by OS OpenData Licence.  Any further sub-licences must retain this attribution.
+
+See https://github.com/martinjc/UK-GeoJSON for more.
+

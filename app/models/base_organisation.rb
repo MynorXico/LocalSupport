@@ -1,3 +1,38 @@
+# == Schema Information
+#
+# Table name: organisations
+#
+#  id                    :integer          not null, primary key
+#  address               :string(255)      default(""), not null
+#  deleted_at            :datetime
+#  description           :text             default(""), not null
+#  donation_info         :text             default(""), not null
+#  email                 :string(255)      default(""), not null
+#  gmaps                 :boolean
+#  imported_at           :datetime
+#  imported_from         :string
+#  latitude              :float
+#  longitude             :float
+#  name                  :string(255)      default(""), not null
+#  non_profit            :boolean
+#  postcode              :string(255)      default(""), not null
+#  publish_address       :boolean          default(FALSE)
+#  publish_email         :boolean          default(TRUE)
+#  publish_phone         :boolean          default(FALSE)
+#  slug                  :string
+#  telephone             :string(255)      default(""), not null
+#  type                  :string           default("Organisation")
+#  website               :string(255)      default(""), not null
+#  created_at            :datetime
+#  updated_at            :datetime
+#  charity_commission_id :integer
+#  imported_id           :integer
+#
+# Indexes
+#
+#  index_organisations_on_slug  (slug) UNIQUE
+#
+
 class BaseOrganisation < ApplicationRecord
   extend FriendlyId
   friendly_id :slug_candidates, use: :slugged
@@ -8,7 +43,6 @@ class BaseOrganisation < ApplicationRecord
   validates_url :donation_info, preferred_scheme: 'http://', message: 'Donation url is not a valid URL',
     if: proc{|org| org.donation_info.present?}
   validates :name, presence: { message: "Name can't be blank"}
-  validates :description, presence: { message: "Description can't be blank"}
   has_many :category_organisations, foreign_key: :organisation_id
   has_many :categories, through: :category_organisations, foreign_key: :organisation_id
 
@@ -35,11 +69,13 @@ class BaseOrganisation < ApplicationRecord
   end
 
   def full_address
+    return self.address if self.postcode.blank?
+    return self.postcode if self.address.blank?
      "#{self.address}, #{self.postcode}"
   end
 
   def gmaps4rails_marker_attrs
-    if recently_updated_and_has_owner
+    if has_been_updated_recently?
       ['marker.png',
         'data-id' => id,
        class: 'marker']

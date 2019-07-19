@@ -45,6 +45,7 @@ def paths(location)
     'reset password' => reset_pwd,
     'new event' => new_event_path,
     'events' => events_path,
+    'services' => services_path,
     'embedded map' => embedded_map_path
   }[location]
 end
@@ -247,4 +248,8 @@ end
 Given("I visit {string} organisation propose edit page") do |name|
   id = Organisation.find_by(name: name).id
   visit new_organisation_proposed_organisation_edit_path :organisation_id => id
+end
+
+Given(/^I am not logged in as any user/) do
+  visit '/'
 end

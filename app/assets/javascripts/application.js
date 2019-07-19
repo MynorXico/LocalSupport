@@ -31,11 +31,20 @@ $(function() {
     events: '/events.json'
   });
   $('[data-behaviour~=date-and-time-picker]').datetimepicker({
-    format: 'DD/MM/YYYY hh:mm'
+    format: 'YYYY/MM/DD hh:mm'
   });
 
-  $('[data-behaviour~=date-only-picker]').datetimepicker({
-    format: 'DD/MM/YYYY'
+  const volunteerSearch = $('#column2 .volunteer-ops-search')
+
+  if ($(window).width() <= 560 ) {
+    volunteerSearch.prependTo('#column1 .row');
+  }
+
+  window.addEventListener('resize', function () {
+    if ($(window).width() <= 560) {
+      volunteerSearch.prependTo('#column1 .row');
+    }else {
+      $('#column1 .volunteer-ops-search').insertAfter('#column2 .container-fluid ')
+    }
   });
 });
-

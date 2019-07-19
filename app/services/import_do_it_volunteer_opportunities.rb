@@ -56,13 +56,18 @@ class ImportDoItVolunteerOpportunities
   end
 
   def internally_generated_or_outside_harrow? op
-    trace_handler.local_origin?(op['id']) || (op['location_name'] != 'Harrow')
+    trace_handler.local_origin?(op['id']) || outside_harrow?(op)
+  end
+
+  def outside_harrow? op
+    !op['locations'][0]['local_authority']['name'].downcase.include? 'harrow'
   end
 
   def populate_vol_op_attributes model, op
+    location = Location.new longitude: op['lng'], latitude: op['lat']
     model.source        = 'doit'
-    model.latitude      = op['lat']
-    model.longitude     = op['lng']
+    model.latitude      = location.latitude
+    model.longitude     = location.longitude
     model.title         = op['title']
     model.description   = op['description']
     model.doit_op_id    = op['id']
@@ -70,6 +75,7 @@ class ImportDoItVolunteerOpportunities
     model.doit_org_link = op['for_recruiter']['slug']
     model.updated_at    = op['updated']
     model.created_at    = op['created']
+    model.imported_at   = Time.current
     model
   end
 

@@ -14,7 +14,7 @@ class ImportReachSkillsVolunteerOpportunities
   end
 
   def run
-    href = 'https://reachskills.org.uk/harrow-community-network-opportunity-feed'
+    href = 'https://reachvolunteering.org.uk/harrow-community-network-opportunity-feed'
     model_klass.where(source: 'reachskills').delete_all
     process_reach_skills_json_page(http.get(href))
   end
@@ -60,5 +60,6 @@ class ImportReachSkillsVolunteerOpportunities
     one_day_ago = Time.current - 1.day # necessary until api is updated.
     model.updated_at = one_day_ago # https://www.pivotaltracker.com/story/show/153805125
     model.created_at = one_day_ago
+    model.imported_at   = Time.current
   end
 end

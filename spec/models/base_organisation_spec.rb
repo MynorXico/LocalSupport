@@ -7,11 +7,6 @@ describe BaseOrganisation, type: :model do
         .with_message("Name can't be blank") 
     end
 
-    it do
-      is_expected.to validate_presence_of(:description)
-        .with_message("Description can't be blank") 
-    end
-
     it { is_expected.to allow_value('test.com').for(:website) }
     it { is_expected.to allow_value('www.test.com').for(:website) }
     it { is_expected.to allow_value('https://test.co.uk').for(:website) }
@@ -19,7 +14,7 @@ describe BaseOrganisation, type: :model do
   end
 
   describe '#has_been_updated_recently?' do
-    subject { FactoryBot.create(:organisation, updated_at: Time.now) }
+    subject { FactoryBot.create(:organisation, updated_at: Time.zone.now) }
 
     it { is_expected.to have_been_updated_recently }
 
@@ -43,10 +38,18 @@ describe BaseOrganisation, type: :model do
   end
 
   describe 'full_address' do
-    it 'should be composed by address and postcode' do
+    it 'should be composed of address and postcode' do
       organisation = FactoryBot.create(:organisation)
       full_address  = "#{organisation.address}, #{organisation.postcode}"
       expect(organisation.full_address).to eq(full_address)
+    end
+    it 'should be just address when postcode is not present' do
+      organisation = FactoryBot.create(:organisation, postcode: ' ')
+      expect(organisation.full_address).to eq(organisation.address)
+    end
+    it 'should be just postcode when address is not present' do
+      organisation = FactoryBot.create(:organisation, address: ' ')
+      expect(organisation.full_address).to eq(organisation.postcode)
     end
   end
 end

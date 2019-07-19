@@ -1,3 +1,46 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id                      :integer          not null, primary key
+#  confirmation_sent_at    :datetime
+#  confirmation_token      :string(255)
+#  confirmed_at            :datetime
+#  current_sign_in_at      :datetime
+#  current_sign_in_ip      :string(255)
+#  deleted_at              :datetime
+#  email                   :string(255)      default(""), not null
+#  encrypted_password      :string(255)      default("")
+#  invitation_accepted_at  :datetime
+#  invitation_created_at   :datetime
+#  invitation_limit        :integer
+#  invitation_sent_at      :datetime
+#  invitation_token        :string(255)
+#  invited_by_type         :string(255)
+#  last_sign_in_at         :datetime
+#  last_sign_in_ip         :string(255)
+#  remember_created_at     :datetime
+#  reset_password_sent_at  :datetime
+#  reset_password_token    :string(255)
+#  sign_in_count           :integer          default(0)
+#  siteadmin               :boolean          default(FALSE)
+#  superadmin              :boolean          default(FALSE)
+#  unconfirmed_email       :string(255)
+#  created_at              :datetime
+#  updated_at              :datetime
+#  invited_by_id           :integer
+#  organisation_id         :integer
+#  pending_organisation_id :integer
+#
+# Indexes
+#
+#  index_users_on_email                 (email) UNIQUE
+#  index_users_on_invitation_token      (invitation_token) UNIQUE
+#  index_users_on_invited_by_id         (invited_by_id)
+#  index_users_on_organisation_id       (organisation_id)
+#  index_users_on_reset_password_token  (reset_password_token) UNIQUE
+#
+
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
@@ -16,7 +59,7 @@ class User < ApplicationRecord
   # prevents mass assignment on other fields not in this list
   #attr_accessible :email, :password, :password_confirmation, :remember_me, :pending_organisation_id
   belongs_to :organisation
-  belongs_to :pending_organisation, :class_name => 'Organisation', :foreign_key => 'pending_organisation_id'
+  belongs_to :pending_organisation, class_name: 'Organisation', foreign_key: :pending_organisation_id
 
   # should we have a before_save here where we check if the pending_organization_id is going from
   # nil to a value and then send the superadmin an email ...
@@ -29,7 +72,7 @@ class User < ApplicationRecord
   end
 
   def pending_org_admin? org
-    return false if self.pending_organisation == nil
+    return false if self.pending_organisation.nil?
     self.pending_organisation == org
   end
 

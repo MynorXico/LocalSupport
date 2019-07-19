@@ -11,18 +11,18 @@ class ApplicationController < ActionController::Base
   add_breadcrumb 'home', :root_path
 
   include CustomErrors
-
+  WHITELISTED_CONTROLLERS = %w[
+   application
+   contributors
+   organisations
+   pages
+   volunteer_ops
+   events
+ ]
   # To prevent infinite redirect loops, only requests from white listed
   # controllers are available in the "after sign-in redirect" feature
   def white_listed
-    %w(
-        application
-        contributors
-        organisations
-        pages
-        volunteer_ops
-        events
-    )
+    WHITELISTED_CONTROLLERS
   end
   # Devise wiki suggests we need to make this return nil for the
   # after_inactive_signup_path_for to be called in registrationscontroller
@@ -66,11 +66,10 @@ class ApplicationController < ActionController::Base
 
 
   def allow_cookie_policy
-    response.set_cookie 'cookie_policy_accepted', {
+    response.set_cookie 'cookie_policy_accepted', 
         value: 'true',
         path: '/',
         expires: 1.year.from_now.utc
-    }
     #respond_to do |format|
     #  format.html redirect_to root_path
     #  format.json { render :nothing => true, :status => 200 }
@@ -91,6 +90,10 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def iframe?
+    params[:iframe]
+  end
 
   # Enforces superadmin-only limits
   # http://railscasts.com/episodes/20-restricting-access
@@ -122,7 +125,7 @@ class ApplicationController < ActionController::Base
 
   def set_tags
     set_meta_tags title: meta_tag_title,
-                  site: 'Harrow volunteering',
+                  site: Setting.meta_tag_site,
                   reverse: true,
                   description: meta_tag_description,
                   author: 'http://www.agileventures.org',
@@ -132,19 +135,17 @@ class ApplicationController < ActionController::Base
   def open_graph_tags
     {
         title: meta_tag_title,
-        site: 'Harrow Community Network',
+        site: Setting.open_graph_site,
         reverse: true,
         description: meta_tag_description,
         author: 'http://www.agileventures.org'
     }
   end
 
-  def meta_tag_title
-    'Harrow Community Network'
-  end
-
-  def meta_tag_description
-    'Volunteering Network for Harrow Community'
+  def method_missing(method_name, *args, &_block)
+    methods = [:meta_tag_title, :meta_tag_description]
+    return super(args) unless methods.include? method_name
+    Setting.send(method_name)
   end
 
   def requested_organisation_path

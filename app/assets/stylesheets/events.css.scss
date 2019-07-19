@@ -10,21 +10,21 @@
   text-rendering: optimizelegibility;
 }
 
-
-#events_scroll {
-  height: 340px;
-  width: 100%;
-  border: 1px solid #ccc;
-  overflow-y: scroll;
-}
-
 .event-box {
   height: 440px;
   width: 100%;
-  border: 1px solid #ccc;
+  padding: 20px;
+  font-size: 20px;
 }
 
 hr {
     margin-bottom: 5px;
     margin-top: 5px;
+}
+
+#edit-button {
+  font-size: 18px;
+  margin-left: -15px;
+  padding: 10px;
+  letter-spacing: 1px;
 }

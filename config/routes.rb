@@ -1,11 +1,19 @@
 LocalSupport::Application.routes.draw do
 
+  resources :services do
+    get 'search', on: :collection
+  end
+  namespace :admin do
+      resources :settings
+
+      root to: "settings#index"
+    end
   get '/.well-known/acme-challenge/:id' => 'pages#letsencrypt'
 
   devise_for :users, :controllers => {:sessions => "sessions", :registrations => "registrations"}
 
-  get '/embedded/map' => 'volunteer_ops#embedded_map'
-
+  get '/embedded/map' => 'volunteer_ops#index', defaults: { iframe: true}
+  
   get 'contributors' => 'contributors#show'
   match 'organisations/search' => 'organisations#search', via: [:get, :post]
 
@@ -31,7 +39,7 @@ LocalSupport::Application.routes.draw do
     resources :proposed_organisation_edits, :only => [:new, :show, :create, :update]
   end
   resources :users
-  resources :events, :only => [:new, :create, :show, :index]
+  resources :events, :only => [:new, :create, :show, :index, :edit, :update]
   resources :proposed_organisations, :only => [:new, :create, :show, :index, :update, :destroy]
 
   # so that static pages are linked directly instead of via /pages/:id
@@ -93,7 +101,7 @@ LocalSupport::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => 'volunteer_ops#index'
+  root :to => ENV['ROOT_PATH'] || 'volunteer_ops#index'
 
   # See how all your routes lay out with "rake routes"
 
