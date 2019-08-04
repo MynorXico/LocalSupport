@@ -12,8 +12,8 @@
 class Setting < ApplicationRecord
   
   DEFAULTS = {
-    latitude: '51.5978',
-    longitude: '-0.3370',
+    latitude: '15.854144',
+    longitude: '-90.0309838',
     site_provider: 'Voluntary Action Harrow Cooperative',
     site_provider_url: 'http://www.voluntaryactionharrow.org.uk/',
     site_title: 'Harrow Community Network',
@@ -28,8 +28,8 @@ class Setting < ApplicationRecord
     large_banner_path: 'HCN-long.png',
     small_banner_path: 'HCN-small.png', 
     site_provider_small_logo: 'VAHC-Small-Logo.png',
-    map_zoom_level: '12',
-    embedded_map_zoom_level: '14',
+    map_zoom_level: '8',
+    embedded_map_zoom_level: '8',
     map_legend_script: 'map_legend_script',
     feedback_form_url: 'https://docs.google.com/a/neurogrid.com/forms/d/1iQwIM0E2gjJF6N6UHgVwtH8OzBbpUr6DS0Xbf-UrKE0/viewform'
   }

@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://api.do-it.org/v1/opportunities?lat=51.5978&lng=-0.3370&miles=0.5
+    uri: https://api.do-it.org/v1/opportunities?lat=15.854144&lng=-90.0309838&miles=0.5&z=8
     body:
       encoding: US-ASCII
       string: ''
